@@ -3,6 +3,29 @@
 const API_BASE_URL = "http://localhost:5001";
 
 /**
+ * Store token in localStorage
+ * @param {string} token - JWT token
+ */
+function setToken(token) {
+  localStorage.setItem('token', token);
+}
+
+/**
+ * Get token from localStorage
+ * @returns {string|null} JWT token or null
+ */
+function getToken() {
+  return localStorage.getItem('token');
+}
+
+/**
+ * Remove token from localStorage
+ */
+function removeToken() {
+  localStorage.removeItem('token');
+}
+
+/**
  * Register a new user
  * @param {string} name - User's full name
  * @param {string} email - User's email
@@ -16,7 +39,6 @@ async function signup(name, email, password) {
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include', // Important: Include cookies
       body: JSON.stringify({ name, email, password }),
     });
 
@@ -25,6 +47,9 @@ async function signup(name, email, password) {
     if (!response.ok) {
       throw new Error(data.message || 'Signup failed');
     }
+
+    // Store token in localStorage
+    setToken(data.token);
 
     return data;
   } catch (error) {
@@ -45,7 +70,6 @@ async function login(email, password) {
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include', // Important: Include cookies
       body: JSON.stringify({ email, password }),
     });
 
@@ -54,6 +78,9 @@ async function login(email, password) {
     if (!response.ok) {
       throw new Error(data.message || 'Login failed');
     }
+
+    // Store token in localStorage
+    setToken(data.token);
 
     return data;
   } catch (error) {
@@ -67,20 +94,26 @@ async function login(email, password) {
  */
 async function logout() {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
-      method: 'POST',
-      credentials: 'include',
-    });
+    const token = getToken();
 
-    if (!response.ok) {
-      throw new Error('Logout failed');
+    if (token) {
+      await fetch(`${API_BASE_URL}/api/auth/logout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
     }
+
+    // Remove token from localStorage
+    removeToken();
 
     // Redirect to login page
     window.location.href = 'login.html';
   } catch (error) {
     console.error('Logout error:', error);
-    // Even if logout fails on server, redirect to login
+    // Even if logout fails on server, clear token and redirect
+    removeToken();
     window.location.href = 'login.html';
   }
 }
@@ -91,17 +124,27 @@ async function logout() {
  */
 async function checkAuth() {
   try {
+    const token = getToken();
+
+    if (!token) {
+      return null;
+    }
+
     const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-      credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
 
     if (!response.ok) {
+      removeToken(); // Clear invalid token
       return null;
     }
 
     const data = await response.json();
     return data.user;
   } catch (error) {
+    removeToken(); // Clear invalid token
     return null;
   }
 }

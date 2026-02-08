@@ -44,16 +44,9 @@ router.post('/register', async (req, res) => {
     // Generate token
     const token = generateToken(user._id);
 
-    // Set cookie
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
-
     res.status(201).json({
       message: 'User registered successfully',
+      token: token,
       user: {
         id: user._id,
         name: user.name,
@@ -93,16 +86,9 @@ router.post('/login', async (req, res) => {
     // Generate token
     const token = generateToken(user._id);
 
-    // Set cookie
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
-
     res.json({
       message: 'Login successful',
+      token: token,
       user: {
         id: user._id,
         name: user.name,
@@ -120,12 +106,7 @@ router.post('/login', async (req, res) => {
 // @access  Public
 router.post('/logout', (req, res) => {
   try {
-    // Clear the token cookie
-    res.cookie('token', '', {
-      httpOnly: true,
-      expires: new Date(0)
-    });
-
+    // Token will be cleared on frontend (localStorage)
     res.json({ message: 'Logout successful' });
   } catch (error) {
     console.error('Logout error:', error);
@@ -138,12 +119,13 @@ router.post('/logout', (req, res) => {
 // @access  Private
 router.get('/me', async (req, res) => {
   try {
-    const token = req.cookies.token;
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
 
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id).select('-password');
 

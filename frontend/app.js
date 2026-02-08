@@ -20,12 +20,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function fetchTasks() {
   try {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      window.location.href = 'login.html';
+      return;
+    }
+
     const response = await fetch(API_URL, {
-      credentials: 'include' // Include cookies for authentication
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
 
     if (response.status === 401) {
       // Unauthorized - redirect to login
+      localStorage.removeItem('token');
       window.location.href = 'login.html';
       return;
     }
@@ -55,12 +65,13 @@ async function handleAddTask(e) {
   }
 
   try {
+    const token = localStorage.getItem('token');
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
       },
-      credentials: 'include',
       body: JSON.stringify({ title, description }),
     });
 
@@ -83,12 +94,13 @@ async function handleAddTask(e) {
 
 async function toggleTask(id, currentStatus) {
   try {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_URL}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
       },
-      credentials: 'include',
       body: JSON.stringify({
         completed: !currentStatus,
       }),
@@ -115,9 +127,12 @@ async function deleteTask(id) {
   }
 
   try {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_URL}/${id}`, {
       method: "DELETE",
-      credentials: 'include'
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
     });
 
     if (!response.ok) {
