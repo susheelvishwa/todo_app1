@@ -78,6 +78,9 @@ async function toggleTask(id, currentStatus) {
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        completed: !currentStatus,
+      }),
     });
 
     if (!response.ok) {
