@@ -1,6 +1,6 @@
 // API configuration
-// const API_URL = "https://todo-app1-3fd5.onrender.com/api/tasks";
-const API_URL = "http://localhost:5001/api/tasks";
+const API_URL = "https://todo-app1-3fd5.onrender.com/api/tasks";
+// const API_URL = "http://localhost:5001/api/tasks";
 
 // DOM elements
 const taskForm = document.getElementById("taskForm");
