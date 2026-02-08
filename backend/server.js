@@ -1,17 +1,27 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const taskRoutes = require('./routes/tasks');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 connectDB();
 
-app.use(cors());
-app.use(express.json());
+// CORS configuration to allow credentials
+app.use(cors({
+  origin: true, // Allow all origins in development
+  credentials: true
+}));
 
+app.use(express.json());
+app.use(cookieParser());
+
+// Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 
 app.get('/', (req, res) => {

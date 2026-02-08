@@ -1,5 +1,6 @@
 // API configuration
-const API_URL = "https://todo-app1-3fd5.onrender.com/api/tasks";
+// const API_URL = "https://todo-app1-3fd5.onrender.com/api/tasks";
+const API_URL = "http://localhost:5001/api/tasks";
 
 // DOM elements
 const taskForm = document.getElementById("taskForm");
@@ -19,7 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function fetchTasks() {
   try {
-    const response = await fetch(API_URL);
+    const response = await fetch(API_URL, {
+      credentials: 'include' // Include cookies for authentication
+    });
+
+    if (response.status === 401) {
+      // Unauthorized - redirect to login
+      window.location.href = 'login.html';
+      return;
+    }
 
     if (!response.ok) {
       throw new Error("Failed to fetch tasks");
@@ -51,6 +60,7 @@ async function handleAddTask(e) {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: 'include',
       body: JSON.stringify({ title, description }),
     });
 
@@ -78,6 +88,7 @@ async function toggleTask(id, currentStatus) {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: 'include',
       body: JSON.stringify({
         completed: !currentStatus,
       }),
@@ -106,6 +117,7 @@ async function deleteTask(id) {
   try {
     const response = await fetch(`${API_URL}/${id}`, {
       method: "DELETE",
+      credentials: 'include'
     });
 
     if (!response.ok) {
