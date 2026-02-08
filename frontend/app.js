@@ -1,5 +1,5 @@
 // API configuration
-const API_URL = 'http://localhost:5001/api/tasks';
+const API_URL = 'https://todo-app1-se7l.vercel.app/api/tasks';
 
 // DOM elements
 const taskForm = document.getElementById('taskForm');
