@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A modern, responsive to-do list application built with MERN stack">
+  <title>Todo App - Manage Your Tasks</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="app-title">
+        <span class="title-icon">✓</span>
+        My Tasks
+      </h1>
+      <p class="app-subtitle">Stay organized, get things done</p>
+    </header>
+
+    <main class="main-content">
+
+      <section class="add-task-section">
+        <form id="taskForm" class="task-form">
+          <div class="form-group">
+            <input
+              type="text"
+              id="taskTitle"
+              class="input-field"
+              placeholder="What needs to be done?"
+              required
+              autocomplete="off"
+            >
+          </div>
+          <div class="form-group">
+            <textarea
+              id="taskDescription"
+              class="input-field textarea-field"
+              placeholder="Add a description (optional)"
+              rows="3"
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <span class="btn-icon">+</span>
+            Add Task
+          </button>
+        </form>
+      </section>
+
+
+      <section class="stats-section">
+        <div class="stat-card">
+          <span class="stat-label">Total</span>
+          <span class="stat-value" id="totalTasks">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Active</span>
+          <span class="stat-value" id="activeTasks">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Completed</span>
+          <span class="stat-value" id="completedTasks">0</span>
+        </div>
+      </section>
+
+
+      <section class="tasks-section">
+        <h2 class="section-title">Your Tasks</h2>
+        <div id="tasksList" class="tasks-list">
+
+        </div>
+        <div id="emptyState" class="empty-state">
+          <div class="empty-icon">📝</div>
+          <p class="empty-text">No tasks yet. Add one to get started!</p>
+        </div>
+      </section>
+    </main>
+
+    
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
